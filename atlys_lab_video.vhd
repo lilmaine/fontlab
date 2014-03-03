@@ -97,7 +97,7 @@ Inst_character_gen: entity work.character_gen(Behavioral) PORT MAP(
 		blank => blank_reg ,
 		row => std_logic_vector(row_sig),
 		column => std_logic_vector(col_sig),
-		ascii_to_write => "00000011",
+		ascii_to_write => switch,
 		write_en => button_sig,
 		r => red,
 		g => green,
