@@ -34,8 +34,8 @@ entity atlys_lab_video is
           clk   : in  std_logic; -- 100 MHz
           reset : in  std_logic;
           start    : in  std_logic;
-          switch  : in  std_logic;
-			 led: out std_logic;
+          switch  : in  std_logic_vector(7 downto 0);
+			 led: out std_logic_vector(7 downto 0);
           tmds  : out std_logic_vector(3 downto 0);
           tmdsb : out std_logic_vector(3 downto 0)
   );
@@ -47,7 +47,7 @@ end atlys_lab_video;
 architecture barnett of atlys_lab_video is
 
 	signal row_sig, col_sig , col_reg, col_next_1, col_next_2, row_reg, row_next_1, row_next_2 : unsigned (10 downto 0);
-	signal button_sig, v_com_sig, pixel_clk, serialize_clk, serialize_clk_n, h_sync,  v_sync, blank, blank_reg, blank_next_1, blank_next_2, clock_s, red_s, green_s, blue_s : std_logic;
+	signal button_sig, v_com_sig, pixel_clk, serialize_clk, serialize_clk_n, h_sync, h_sync1, h_sync2, v_sync, v_sync1, v_sync2, blank, blank_reg, blank_next_1, blank_next_2, clock_s, red_s, green_s, blue_s : std_logic;
 	signal red, blue, green : std_logic_vector (7 downto 0);
 
 begin
@@ -110,14 +110,14 @@ Inst_character_gen: entity work.character_gen(Behavioral) PORT MAP(
 		button => start,
 		button_pulse => button_sig
 	);	
-
+--1st blank delay
 		process(pixel_clk) is 
 			begin
 				if(rising_edge(pixel_clk)) then
 					blank_next_1 <= blank;
 					end if;
 		end process;
-
+--2nd blank delay
 		process(pixel_clk) is
 			begin
 				if(rising_edge(pixel_clk)) then
@@ -133,6 +133,37 @@ Inst_character_gen: entity work.character_gen(Behavioral) PORT MAP(
 		end process;
 
 
+--1st hsync delay
+		process(pixel_clk) is 
+			begin
+				if(rising_edge(pixel_clk)) then
+					h_sync1 <= h_sync;
+					end if;
+		end process;
+--2nd hsync delay
+		process(pixel_clk) is
+			begin
+				if(rising_edge(pixel_clk)) then
+					h_sync2 <= h_sync1;
+					end if;
+		end process;
+
+
+--1st vsync delay
+		process(pixel_clk) is 
+			begin
+				if(rising_edge(pixel_clk)) then
+					v_sync1 <= v_sync;
+					end if;
+		end process;
+--2nd vsync delay
+		process(pixel_clk) is
+			begin
+				if(rising_edge(pixel_clk)) then
+					v_sync2 <= v_sync1;
+					end if;
+		end process;
+
 
     -- TODO: VGA component instantiation
     -- TODO: Pixel generator component instantiation
@@ -146,9 +177,9 @@ Inst_character_gen: entity work.character_gen(Behavioral) PORT MAP(
                 red_p     => red,
                 green_p   => green,
                 blue_p    => blue,
-                blank     => blank,
-                hsync     => h_sync,
-                vsync     => v_sync,
+                blank     => blank_reg,
+                hsync     => h_sync2,
+                vsync     => v_sync2,
                 -- outputs to TMDS drivers
                 red_s     => red_s,
                 green_s   => green_s,
@@ -165,5 +196,15 @@ Inst_character_gen: entity work.character_gen(Behavioral) PORT MAP(
         ( O  => TMDS(2), OB => TMDSB(2), I  => red_s   );
     OBUFDS_clock : OBUFDS port map
         ( O  => TMDS(3), OB => TMDSB(3), I  => clock_s );
+		  
+		  
+LED(7) <= switch(7);
+LED(6) <= switch(6);
+--LED(5) <= switch(5);
+LED(4) <= switch(4);
+LED(3) <= switch(3);
+LED(2) <= switch(2);
+LED(1) <= switch(1);
+LED(0) <= switch(0);		  
 
 end barnett;
