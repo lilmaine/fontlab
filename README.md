@@ -57,3 +57,8 @@ For initial testing in the prelab I created a test bench but for problems later 
 The biggest problem I ran into with this lab was my delays. Originally, my display was extremely shifted to the right
 and after making some modifications it got closer but there was still a very noticable gap on the left side of the screen. It wasn't until I added in delays for h_sync and v_sync and not just the blank delays that I origially had that I was able to get all of my letters to appear correctly.
 
+
+
+
+
+Documentation: C2C Belcher helped me out a lot in the beginning when my own code was not working. I referenced C2C John Miller and C2C Belchers code for assistance particularly with the combinational logic for the row and column multiply - C2C Belcher explained what all of the code was doing.
